@@ -11,7 +11,7 @@ def and_join(_list):
 
 def monster():
     elements = person.keys()
-    n = randint(2,4)
+    n = randint(2,3)
     return and_join([choice(person[choice(elements)]) for i in xrange(n)])
 
 def capitalise(_str):
@@ -22,18 +22,18 @@ def capitalise(_str):
 
 def randth(_key):
     #Horrible thing that makes repeated phrases that bit less likely
-    return choice(sample(fragments[_key], randint(1, 50)))
+    return choice(sample(fragments[_key], randint(1, len(fragments[_key]))))
 
 def quoth_the_bot(reply):
     if reply:
         return capitalise(randth('youknow') + ' ' + randth('datespan')
-                          + randth('action') + ', ' + reply + '-- and '
-                          + randth('youknow') + ' ' + randth('indicator')
+                          + ' ' + randth('action') + ', ' + reply + '-- and '
+                          + randth('youknow') + ' ' + randth('indicators')
                           + ' ' + monster()) + "\n"
     return "\n"
 
 def subject():
-    return capitalise(randth('indicator') + ' ' + randth('description')).encode('ascii')
+    return capitalise(randth('indicators') + ' ' + monster()).encode('ascii')
 
 def compose(anxiety, reply):
     _str = capitalise(randth('contemplatives') + ' ' + anxiety)
