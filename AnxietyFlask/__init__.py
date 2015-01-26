@@ -2,15 +2,19 @@
 Mostly done as a personal exercise to build a bigger app in Flask
 and learn SQLAlchemy/Sending mail"""
 
+from AnxietyFlask.mailgun import InMail, OutMail
 from AnxietyFlask.models import Account, Anxiety, Reply, db
 from flask import Flask
 from flask import request
 from random import choice
 from uuid import uuid4
 
+## Initialise and set up the application
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URL'] = 'sqlite:///tmp/test.db'
+#Change this
+app.config.from_object(AnxietyFlask.config.Config)
 db.init_app(app)
+mailer.init_app(app)
 
 ##Helpful Functions
 def get_account_id(_uuid):
@@ -18,14 +22,11 @@ def get_account_id(_uuid):
 
 def get_account(_id):
     if isinstance(_id, int):
-        return Account.get(_id)
+        return Account.get_or_404(_id)
     elif isinstance(_id, str):
-        return Account.query.filter_by(uid=_id).first()
+        return Account.query.filter_by(uid=_id).first_or_404()
     else:
-        raise NotFoundException('No Account with that ID found')
-
-def get_anxiety(_a_id):
-    return choice(Anxiety.query.filter_by(account_id=_a_id))
+        #raise  #What is that in flask?
 
 def get_reply(_a_id):
     return Reply.query.filter_by(account_id=_a_id).first()
@@ -53,7 +54,22 @@ def create_account(_name, _email, anxieties):
     db.session.commit()
     
 def activate(uuid):
-    pass
+    account = get_account(uuid)
+    if account.active:
+        return
+    else:
+        account.active = True
+    db.session.commit()
 
 def deactivate(uuid):
-    pass
+    account = get_account(uuid)
+    if not account.active:
+        return
+    account.active = False
+    db.session.commit()
+
+def anxieties():
+    active_accounts = Account.query.filter_by(active=True).all()
+    send_mail(active_accounts)
+
+## Views

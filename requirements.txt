@@ -1,4 +1,5 @@
 #AnxietyFlask
 flask==0.10
-flask-mail==0.9.1
 flask-sqlalchemy==2.0
+celery==3.1.17
+requests==2.5.1

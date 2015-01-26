@@ -1,4 +1,5 @@
 from flask.ext.sqlalchemy import SQLAlchemy
+from random import choice
 
 db = SQLAlchemy()
 
@@ -9,8 +10,11 @@ class Account(db.Model):
     email = db.Column(db.String(120))
     reply = db.relationship('Reply', uselist=False, backref='Account',
                             lazy='dynamic')
-    anxiety = db.relationship('Anxiety', backref='Account', lazy='dynamic')
+    anxieties = db.relationship('Anxiety', backref='Account', lazy='dynamic')
     active = db.Column(db.Boolean)
+
+    def choose_anxiety(self):
+        return choice(self.anxieties).anxiety
 
 class Anxiety(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -22,3 +26,4 @@ class Reply(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     account_id = db.Column(db.Integer, db.ForeignKey('account.id'))
     reply = db.Column(db.Text)
+    last_included = db.Column(db.DateTime)

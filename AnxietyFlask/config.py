@@ -8,3 +8,7 @@ class Config():
 class Testing(Config):
 	DEBUG = True
 	MAIL_DEBUG = True
+
+class Mailgun_Config(Config):
+    API_KEY = ''
+    BASE_URL = ''
