@@ -1,9 +1,8 @@
 class Config():
 	DEBUG=False
 	SQLALCHEMY_DATABASE_URL = 'sqlite:///tmp/test.db'
-	MAIL_SERVER = 'localhost'
-	MAIL_USE_SSL = True
-	DEFAULT_MAIL_SENDER = 'your_anxiety@anxietyfla.sk'
+    CELERY_BROKER_URL = ''
+    CELERY_RESULT_BACKEND = ''
 
 class Testing(Config):
 	DEBUG = True
