@@ -18,7 +18,8 @@ class Mail():
             self.parameters[key] = val
 
     def do_request(self, endpoint, r_type, **kwargs):
-        [self.parameters[key] = val for key, val in kwargs]
+        if kargs:
+            [self.parameters[key] = val for key, val in kwargs]
         if r_type == 'get:'
             _r = get(base_url+endpoint, params=self.parameters,
                               auth=('api',self.api_key))
@@ -44,7 +45,7 @@ class InMail(Mail):
                        pretty='no', event='stored').do_request('/events', 'get')
         messages = []
         for item in events['items']:
-            data = InMail().do_request('messages', 'get', key=item['sotrage']['key'])        
+            data = cls().do_request('messages', 'get', key=item['sotrage']['key'])        
             messages.append(data)
             messages.append(InMail().from_dict(data))
         return messages
