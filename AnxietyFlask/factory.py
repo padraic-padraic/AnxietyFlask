@@ -1,6 +1,6 @@
 from celery import Celery
 from flask import Flask
-
+from AnxietyFlask.models import db
 
 def make_app():
     ## Initialise and set up the application
@@ -8,7 +8,6 @@ def make_app():
     #Change this
     app.config.from_object(AnxietyFlask.config.Config)
     db.init_app(app)
-    mailer.init_app(app)
     return app
 
 def make_celery_app(app=None):

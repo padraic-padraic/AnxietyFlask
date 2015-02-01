@@ -1,7 +1,7 @@
 from config import MailgunConfig
 from datetime import datetime, timedelta
 
-from requests import get, post
+from requests import get, post, delete
 
 conf = MailgunConfig()
 
@@ -22,14 +22,17 @@ class Mail():
             [self.parameters[key] = val for key, val in kwargs]
         if r_type == 'get:'
             _r = get(base_url+endpoint, params=self.parameters,
-                              auth=('api',self.api_key))
+                     auth=('api',self.api_key))
         elif r_type == 'post':
             _r = post(base_url+endpoint, params=self.parameters,
-                               auth=('api',self.api_key)
+                      auth=('api',self.api_key))
+        elif r_type == 'delete':
+            _r = delete(base_url+endpoint, params=self.parameters,
+                        auth=('api', self.api_key))
         else:
             raise Exception
         if _r.status_code != 200:
-            raise Exception
+            _r.raise_for_status
         return _r.json()
 
 class InMail(Mail):
@@ -45,13 +48,13 @@ class InMail(Mail):
                        pretty='no', event='stored').do_request('/events', 'get')
         messages = []
         for item in events['items']:
-            data = cls().do_request('messages', 'get', key=item['sotrage']['key'])        
-            messages.append(data)
+            data = cls().do_request('messages/'+ item['sotrage']['key'], 'get')
             messages.append(InMail().from_dict(data))
+            cls().do_request('messages/' + item['sotrage']['key'], 'deletes')
         return messages
 
 class OutMail(Mail):
-    required = ['to', 'body', 'html', 'subject']
+    required = ['to', 'body', 'subject']
 
     def send(self):
         if not any(i in self.parameters.keys() for i in required):

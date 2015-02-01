@@ -35,7 +35,8 @@ def quoth_the_bot(reply):
 def subject():
     return capitalise(randth('indicators') + ' ' + monster()).encode('ascii')
 
-def compose(anxiety, reply):
+def compose(name, anxiety, reply):
+    _str "Dear " + name + ", \n"
     _str = capitalise(randth('contemplatives') + ' ' + anxiety)
     _str += "\n\n"
     _str += capitalise(randth('interrogatories') + ' ' + randth('offers')
@@ -43,4 +44,4 @@ def compose(anxiety, reply):
     _str += "\n" + quoth_the_bot(reply)
     _str += capitalise(randth('returns') + ' ' + randth('interrogatories')) + ' '
     _str += capitalise(randth('returns') + ' ' + randth('call-to-action'))
-    return _str.encode('ascii')
+    return _str
