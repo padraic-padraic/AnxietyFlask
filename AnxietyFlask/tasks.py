@@ -20,7 +20,7 @@ def error_mailer(failed_users):
     if len(failed_users) == 0:
         return True
     body = "Dear" + celery.conf.ADMIN + "\n This is an email to let you know something went wrong (predictably).\n"
-    body += "For you, a great many things have gone wrong, but that's neither here nor there: I'm talking" +
+    body += "For you, a great many things have gone wrong, but that's neither here nor there: I'm talking"
     body += "about the website. Here's a list. \n"
     for failure, error in failed_users:
         body += "Account: " + failure.id + "\n"
