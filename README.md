@@ -11,7 +11,8 @@ Because I'm new to Flask and wanted to mess around. Specifically, I wanted to pr
 Once you've pointed it at a sqlite database and entered your mailgun details, you can mess around by simply doing
 ```
    pip install -r requirements.txt
-   python AnxietyFlask/AnxietyFlask/runserver.py
+   celery -A AnxietyFlask.tasks worker -B
+   python AnxietyFlask/runserver.py
 ```
 And it will be available on localhost:8000.
 

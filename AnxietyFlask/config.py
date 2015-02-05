@@ -12,12 +12,14 @@ class Config():
             'schedule': crontab(hour='0, 4, 7, 10, 11, 12, 13, 15, 16, 18, 19, 22'),
             'options': {'countdown': 3600*random(),
                         'link': 'tasks.error_mailer.s()'}
-        },
+            },
         'Get Mail': {
-            'task': 'tasks.get_mail'
+            'task': 'tasks.get_mail',
             'schedule': crontab(hour='3, 7, 9, 10, 11, 12, 14, 15, 17, 18, 21, 23', minute=30)
         }
     }
+    ADMIN_MAIL = 'your_admin@example.com'
+    ADMIN = 'You'
 
 class Testing(Config):
     DEBUG = True

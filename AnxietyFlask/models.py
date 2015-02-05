@@ -1,6 +1,6 @@
 from AnxietyFlask.anxiety_bot import subject, compose
 from flask.ext.sqlalchemy import SQLAlchemy
-from datetime import datetime.now, timedelta
+from datetime import datetime, timedelta
 from random import choice
 
 db = SQLAlchemy()
@@ -16,8 +16,8 @@ class Account(db.Model):
     active = db.Column(db.Boolean)
 
     def include_reply(self):
-        if now() - self.reply.last_included > timedelta(days=2):
-            self.reply.last_included = now()
+        if datetime.now() - self.reply.last_included > timedelta(days=2):
+            self.reply.last_included = datetime.now()
             return self.reply.reply
         else:
             return None
@@ -25,8 +25,8 @@ class Account(db.Model):
     def choose_anxiety(self):
         return choice(self.anxieties).anxiety
 
-    @propery
-    def email(self):
+    @property
+    def mail(self):
         return subject(), compose(self.name, self.choose_anxiety(), self.include_reply())
 
 class Anxiety(db.Model):

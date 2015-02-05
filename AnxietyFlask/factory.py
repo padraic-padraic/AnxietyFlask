@@ -1,12 +1,13 @@
-from celery import Celery
+from celery import Celery, Task
 from flask import Flask
+from AnxietyFlask.config import Config
 from AnxietyFlask.models import db
 
 def make_app():
     ## Initialise and set up the application
     app = Flask(__name__)
     #Change this
-    app.config.from_object(AnxietyFlask.config.Config)
+    app.config.from_object(Config)
     db.init_app(app)
     return app
 

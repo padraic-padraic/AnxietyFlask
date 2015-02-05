@@ -1,4 +1,4 @@
-from AnxietyFlask import anxieties
+from AnxietyFlask import anxieties, insert_reply
 from AnxietyFlask.factory import make_celery_app
 from AnxietyFlask.mailgun import OutMail
 from AnxietyFlask.models import Account
@@ -19,16 +19,16 @@ MANUAL_SEND_ENDPOINT = "http://path-to-site.com/api/send?uid="
 def error_mailer(failed_users):
     if len(failed_users) == 0:
         return True
-    body = "Dear Padraic, \n" + "This is an email to let you know something went wrong (predictably).\n"
-           + "For you, a great many things have gone wrong, but that's neither here nor there: I'm talking" +
-           "about the website. Here's a list. \n"
+    body = "Dear" + celery.conf.ADMIN + "\n This is an email to let you know something went wrong (predictably).\n"
+    body += "For you, a great many things have gone wrong, but that's neither here nor there: I'm talking" +
+    body += "about the website. Here's a list. \n"
     for failure, error in failed_users:
         body += "Account: " + failure.id + "\n"
         body += "Error Code: " + error + "\n"
         body += "To do something about it, click: " +  MANUAL_SEND_ENDPOINT + failure.uid
         body += "\n \n"
     body += 'Best wishes, \n Your Anxiety'
-    OutMail(to="padraic.calpin93@gmail.com", subject = "More things you did wrong", body=body).send()
+    OutMail(to=celer.conf.ADMIN_MAIL, subject = "More things you did wrong", text=body).send()
 
 @celery.task(name='tasks.get_mail')
 def get_mail():
