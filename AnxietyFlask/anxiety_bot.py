@@ -1,4 +1,5 @@
-"""The email generating bot."""
+"""The email generating bot; this component is mostly a transcription of Paul's code, only used a little python to break the 
+sentence fragments out into json files so I could add more / didn't have to transcrive them by hand"""
 from random import choice, randint, sample
 
 import json
@@ -11,13 +12,13 @@ def and_join(_list):
 
 def monster():
     elements = PERSON.keys()
-    n = randint(2,3)
-    return and_join([choice(PERSON[choice(elements)]) for i in xrange(n)])
+    _n = randint(2,3)
+    return and_join([choice(PERSON[choice(elements)]) for i in xrange(_n)])
 
 def capitalise(_str):
     _str = _str[:1].upper() + _str[1:]
     if _str[-1] != '.':
-        _str +='.'
+        _str += '.'
     return _str
 
 def randth(_key):

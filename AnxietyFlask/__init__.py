@@ -7,8 +7,10 @@ from AnxietyFlask.models import Account, Anxiety, Reply, db
 from AnxietyFlask.factory import make_app
 from flask import request
 from random import choice
-from requests.exceptions import HttpError
+from requests.exceptions import HTTPError
 from uuid import uuid4
+
+import AnxietyFlask.views
 
 app = None
 app = make_app()

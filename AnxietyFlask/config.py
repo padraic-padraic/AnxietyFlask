@@ -20,6 +20,7 @@ class Config():
     }
     ADMIN_MAIL = 'your_admin@example.com'
     ADMIN = 'You'
+    WTF_CSRF_SECRET_KEY = 'Stirngstring'
 
 class Testing(Config):
     DEBUG = True

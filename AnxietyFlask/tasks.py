@@ -1,9 +1,8 @@
 from AnxietyFlask import anxieties, insert_reply
 from AnxietyFlask.factory import make_celery_app
-from AnxietyFlask.mailgun import OutMail
+from AnxietyFlask.mailgun import InMail, OutMail
 from AnxietyFlask.models import Account
-from random import random
-from requests.exceptions import HttpError
+from requests.exceptions import HTTPError
 
 class TotalFailure(Exception):
     def __init__(self, value):
@@ -28,7 +27,7 @@ def error_mailer(failed_users):
         body += "To do something about it, click: " +  MANUAL_SEND_ENDPOINT + failure.uid
         body += "\n \n"
     body += 'Best wishes, \n Your Anxiety'
-    OutMail(to=celer.conf.ADMIN_MAIL, subject = "More things you did wrong", text=body).send()
+    OutMail(to=celery.conf.ADMIN_MAIL, subject = "More things you did wrong", text=body).send()
 
 @celery.task(name='tasks.get_mail')
 def get_mail():
@@ -38,7 +37,7 @@ def get_mail():
         if user is None:
             continue #Need to do more here
         else:
-            insert_reply(user.id, mail.body)
+            insert_reply(user.id, message.body)
 
 @celery.task(name='tasks.send_mail')
 def send_mail():
