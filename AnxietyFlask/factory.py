@@ -1,9 +1,11 @@
 from celery import Celery, Task
 from flask import Flask
 from flask_bootstrap import Bootstrap
+from flask_wtf import CsrfProtect
 from AnxietyFlask.config import Config
 from AnxietyFlask.models import db
-from AnxietyFlask.views import csrf
+
+csrf = CsrfProtect()
 
 def make_app():
     ## Initialise and set up the application
@@ -11,8 +13,8 @@ def make_app():
     #Change this
     app.config.from_object(Config)
     db.init_app(app)
-    csrf.init_app(app)
     Bootstrap(app)
+    csrf.init_app(app)
     return app
 
 def make_celery_app(app=None):

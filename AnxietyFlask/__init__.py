@@ -4,16 +4,18 @@ and learn SQLAlchemy/Sending mail"""
 
 from AnxietyFlask.mailgun import InMail, OutMail
 from AnxietyFlask.models import Account, Anxiety, Reply, db
-from AnxietyFlask.factory import make_app
-from flask import request
+from AnxietyFlask.factory import make_app, csrf
+from flask import request, render_template
 from random import choice
 from requests.exceptions import HTTPError
 from uuid import uuid4
 
-import AnxietyFlask.views
-
 app = None
 app = make_app()
+
+@csrf.error_handler
+def csrf_error(reason):
+    return render_template('csrf_error.html', reason=reason), 400
 
 ##Helpful Functions
 def get_account_id(_uuid):

@@ -1,7 +1,7 @@
 from celery.schedules import crontab
 from random import random
 
-WORK_DIR='/path/to/work/dir/'
+WORK_DIR='/Users/padraic/AnxietyFlask/AnxietyFlask/'
 
 class Config():
     DEBUG=False
@@ -24,6 +24,7 @@ class Config():
     ADMIN_MAIL = 'your_admin@example.com'
     ADMIN = 'You'
     WTF_CSRF_SECRET_KEY = 'Stirngstring'
+    SECRET_KEY = 'A secret...'
 
 class Testing(Config):
     DEBUG = True

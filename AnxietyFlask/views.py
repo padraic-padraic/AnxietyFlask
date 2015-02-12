@@ -1,14 +1,8 @@
 from AnxietyFlask import app
 from flask import render_template, redirect
-from flask_wtf import Form, CsrfProtect
+from flask_wtf import Form
 from wtforms import validators, StringField
 from wtforms.fields.html5 import EmailField
-
-csrf = CsrfProtect()
-
-@csrf.error_handler
-def csrf_error(reason):
-	return render_template('csrf_error.html', reason=reason), 400
 
 class SignupForm(Form):
 	name = StringField('name', validators=[validators.InputRequired()])
