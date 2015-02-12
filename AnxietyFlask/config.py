@@ -1,7 +1,7 @@
 from celery.schedules import crontab
 from random import random
 
-WORK_DIR='/Users/padraic/AnxietyFlask/AnxietyFlask/'
+WORK_DIR='/path/to/package/'
 
 class Config():
     DEBUG=False
