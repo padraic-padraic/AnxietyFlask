@@ -1,11 +1,12 @@
 """The email generating bot; this component is mostly a transcription of Paul's code, only used a little python to break the 
 sentence fragments out into json files so I could add more / didn't have to transcrive them by hand"""
+from AnxietyFlask.config import WORK_DIR
 from random import choice, randint, sample
 
 import json
 
-FRAGMENTS = json.load(open('fragments.json'))
-PERSON = json.load(open('person.json'))
+FRAGMENTS = json.load(open(WORK_DIR+'fragments.json'))
+PERSON = json.load(open(WORK_DIR+'person.json'))
 
 def and_join(_list):
     return ', '.join(_list[:-1]) + ' and ' + _list[-1]

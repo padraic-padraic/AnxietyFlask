@@ -1,5 +1,8 @@
 from celery.schedules import crontab
 from random import random
+
+WORK_DIR='/path/to/work/dir/'
+
 class Config():
     DEBUG=False
     SQLALCHEMY_DATABASE_URL = 'sqlite:///tmp/test.db'
