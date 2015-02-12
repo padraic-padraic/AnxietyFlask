@@ -1,4 +1,4 @@
-from config import MailgunConfig
+from AnxietyFlask.config import MailgunConfig
 from datetime import datetime, timedelta
 
 from requests import get, post, delete

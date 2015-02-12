@@ -40,7 +40,7 @@ def anxieties():
         _subject, _compose = user.email
         try:
             OutMail(subject=_subject, body=_compose, to=user.email).send()
-        except HttpError as _e:
+        except HTTPError as _e:
             if _e.errno == 404:
                 return _e
             failed_users.append((user, _e.errno))
@@ -84,3 +84,4 @@ def activate():
 def send():
     pass
 ## Views
+from AnxietyFlask.views import root
