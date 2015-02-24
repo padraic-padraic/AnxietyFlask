@@ -1,6 +1,6 @@
 from AnxietyFlask.anxiety_bot import subject, compose
-from flask.ext.sqlalchemy import SQLAlchemy
 from datetime import datetime, timedelta
+from flask.ext.sqlalchemy import SQLAlchemy
 from random import choice
 
 db = SQLAlchemy()
@@ -10,8 +10,7 @@ class Account(db.Model):
     uid = db.Column(db.String(32), unique=True)
     name = db.Column(db.String(40))
     email = db.Column(db.String(120))
-    reply = db.relationship('Reply', uselist=False, backref='Account',
-                            lazy='dynamic')
+    reply = db.relationship('Reply', uselist=False, backref='Account')
     anxieties = db.relationship('Anxiety', backref='Account', lazy='dynamic')
     active = db.Column(db.Boolean)
 

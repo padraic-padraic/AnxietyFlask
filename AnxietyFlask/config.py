@@ -1,11 +1,11 @@
 from celery.schedules import crontab
 from random import random
 
-WORK_DIR='/path/to/package/'
+WORK_DIR='/Users/padraic/AnxietyFlask/AnxietyFlask/'
 
 class Config():
     DEBUG=False
-    SQLALCHEMY_DATABASE_URL = 'sqlite:///tmp/test.db'
+    SQLALCHEMY_DATABASE_URI = 'sqlite:////tmp/test.db'
     CELERY_BROKER_URL = 'redis://localhost:6379/0'
     CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'
     CELERY_TIMEZONE = 'Europe/London'
@@ -21,7 +21,7 @@ class Config():
             'schedule': crontab(hour='3, 7, 9, 10, 11, 12, 14, 15, 17, 18, 21, 23', minute=30)
         }
     }
-    ADMIN_MAIL = 'your_admin@example.com'
+    ADMIN_MAIL = 'padraic.calpin93@gmail.com'
     ADMIN = 'You'
     WTF_CSRF_SECRET_KEY = 'Stirngstring'
     SECRET_KEY = 'A secret...'
@@ -31,7 +31,7 @@ class Testing(Config):
     MAIL_DEBUG = True
 
 class MailgunConfig(Config):
-    API_KEY = 'key'
+    API_KEY = 'key-69fbdc2bb166cc610d394f75b08f24b0'
     BASE_URL = 'https://api.mailgun.net/v2/'
-    DOMAIN = 'domain'
-    FROM = 'Your email <email@example.com>'
+    DOMAIN = 'sandbox94e1171f53f743f491ed2142b915fa33.mailgun.org/'
+    FROM = 'Your anxiety <email@example.com>'

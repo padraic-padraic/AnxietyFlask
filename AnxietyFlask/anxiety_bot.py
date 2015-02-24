@@ -31,19 +31,20 @@ def quoth_the_bot(reply):
         return capitalise(randth('youknow') + ' ' + randth('datespan')
                           + ' ' + randth('action') + ', ' + reply + '-- and '
                           + randth('youknow') + ' ' + randth('indicators')
-                          + ' ' + monster()) + "\n"
-    return "\n"
+                          + ' ' + monster()) + "<br>"
+    return "<br>"
 
 def subject():
     return capitalise(randth('indicators') + ' ' + monster()).encode('ascii')
 
 def compose(name, anxiety, reply):
-    _str = "Dear " + name + ", \n"
+    _str = "Dear " + name + ", <br>"
     _str += capitalise(randth('contemplatives') + ' ' + anxiety)
-    _str += "\n\n"
+    _str += "<br><br>"
     _str += capitalise(randth('interrogatories') + ' ' + randth('offers')
                        + " \"" + anxiety + "\"-- " + randth('interrogatories'))
-    _str += "\n" + quoth_the_bot(reply)
+    _str += "<br>" + quoth_the_bot(reply)
     _str += capitalise(randth('returns') + ' ' + randth('interrogatories')) + ' '
     _str += capitalise(randth('returns') + ' ' + randth('call-to-action'))
+    _str += "<br>Sincerely,<br>Your Anxiety"
     return _str

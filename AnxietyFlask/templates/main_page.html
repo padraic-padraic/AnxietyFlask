@@ -1,15 +1,7 @@
-<!DOCTYPE html>
-<head>
-	<title>Anxiety Flask</title>
-	<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
-<!-- 	<link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">-->
-</head>
-<body>
-	<p>Hello World</p>
-	<form method="POST" action="/">
-	{{signup_form.name}}
-	{{signup_form.email}}
-	{{signup_form.anxieties}}
-	<input type="submit" value="Go">
-	</form>
-</body>
+{% extends "base.html" %}
+{% block content %}
+	<div id="title" class="page-header" style="padding-left:20%; padding-right:20%">
+		<h1> Anxiety Flask <br> <small>Coping through copying.</small></h1>
+	</div>
+	{% include 'signup.html' %}
+{% endblock %}

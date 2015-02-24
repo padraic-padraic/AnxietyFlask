@@ -63,7 +63,7 @@ class InMail(Mail):
 
 class OutMail(Mail):
     """Outgoing messages. These can be constructed and sent in one shot e.g:
-        OutMail(to='test@example.com', subject='Testing', body='1, 2, 3...').send() """
+        OutMail(to='test@example.com', subject='Testing', text='1, 2, 3...').send() """
     required = ['to', 'text', 'subject']
 
     def send(self):

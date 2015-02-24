@@ -1,0 +1,10 @@
+{% extends "bootstrap/base.html" %}
+{% block title %}Anxiety Flask{% endblock %}
+{% block styles %}
+{{ super () }}
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
+{% endblock %}
+<div class="container-fluid">
+{% block content -%}
+{%- endblock %}
+</div>
