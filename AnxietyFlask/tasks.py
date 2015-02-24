@@ -5,14 +5,14 @@ from celery import Celery, Task
 from requests.exceptions import HTTPError
 
 celery = Celery(app.import_name, broker=app.config['CELERY_BROKER_URL'])
-    celery.conf.update(app.config)
-    TaskBase = Task
-    class ContextTask(TaskBase):
-        abstract = True
-        def __call__(self, *args, **kwargs):
-            with app.app_context():
-                return TaskBase.__call__(self, *args, **kwargs)
-    celery.Task = ContextTask
+celery.conf.update(app.config)
+TaskBase = Task
+class ContextTask(TaskBase):
+    abstract = True
+    def __call__(self, *args, **kwargs):
+        with app.app_context():
+            return TaskBase.__call__(self, *args, **kwargs)
+celery.Task = ContextTask
 
 MANUAL_SEND_ENDPOINT = "http://path-to-site.com/api/send?uid="
 
@@ -48,3 +48,13 @@ def send_mail():
         raise TotalFailure(404)
     else:
         return status
+
+@celery.task(name='tasks.send_activation')
+def send_activation(account):
+    body = "Hello, " + account.name.split(' ')[0] + ", <br>"
+    body += "You've asked us to fill up an Anxiety Flask for you. <br> To confirm that, click"
+    body += "<a href='http://localhost:5000/api/activate?uuid=" + account.uid + "'> this link.</a> <br>"
+    body += "Don't worry: every email will have a link to deactivate or delete your account in one click.<br>"
+    body += "Best wishes, <br>"
+    body += "Your anxiety."
+    OutMail(to=account.email, text=body, html=body, subject="Open up your Anxiety Flask").send()

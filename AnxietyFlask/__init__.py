@@ -12,9 +12,9 @@ from requests.exceptions import HTTPError
 from uuid import uuid4
 
 class TotalFailure(Exception):
-    explanations = {400: 'Something is wrong with what you asked of me.',
+    explanations = {400: 'Something is wrong with the request.',
                          404: 'This doesn\'t, and perhaps shall never, exist.',
-                         500: 'Something went very wrong. We\'re on it.'}
+                         500: 'Something went very wrong. On our end. We\'re on it.'}
     def __init__(self, value, *args):
         self.value = value
         self.explanation = self.explanations[value]
@@ -82,14 +82,7 @@ def insert_anxiety(_a_id, _anxiety):
         db.session.add(Anxiety(account_id=_a_id, anxiety=_anxiety))
         db.session.flush()
 
-def send_activation(account):
-    body = "Hello, " + account.name.split(' ')[0] + ", <br>"
-    body += "You've asked us to fill up an Anxiety Flask for you. <br> To confirm that, click"
-    body += "<a href='http://localhost:5000/api/activate?uuid=" + account.uid + "'> this link.</a> <br>"
-    body += "Don't worry: every email will have a link to deactivate or delete your account in one click.<br>"
-    body += "Best wishes, <br>"
-    body += "Your anxiety."
-    OutMail(to=account.email, text=body, html=body, subject="Open up your Anxiety Flask").send()
+from AnxietyFlask.tasks import send_activation
 
 def create_account(_name, _email, _anxieties):
     with app.app_context():

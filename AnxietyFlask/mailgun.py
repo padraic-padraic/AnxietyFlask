@@ -1,9 +1,13 @@
 from AnxietyFlask.config import MailgunConfig
 from datetime import datetime, timedelta
-
+from email.utils import formatdate
 from requests import get, post, delete
+from time import mktime
 
 CONF = MailgunConfig()
+
+def rfc2822(dt):
+    return formatdate(mktime(dt.timetuple()))
 
 class Mail():
     """Base class for messages"""
@@ -52,11 +56,11 @@ class InMail(Mail):
     @classmethod
     def get_messages(cls):
         """Fetch the last days messages."""
-        events = Mail(begin=datetime.now()-timedelta(days=1), end=datetime.now(),
+        events = Mail(begin=rfc2822(datetime.now()-timedelta(days=1)), end=rfc2822(datetime.now()),
                        pretty='no', event='stored').do_request('events', 'get')
         messages = []
         for item in events['items']:
-            data = Mail().do_request('messages'+ item['sotrage']['key'], 'get')
+            data = Mail().do_request('messages/'+ item['sotrage']['key'], 'get')
             messages.append(cls().from_dict(data))
             cls().do_request('messages/' + item['sotrage']['key'], 'delete')
         return messages

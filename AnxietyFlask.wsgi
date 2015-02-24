@@ -1,3 +1,4 @@
-from AnxietyFlask.factory import create_app
+import sys
+sys.path.insert(0, '/var/www/AnxietyFlask')
 
-application = create_app()
+from AnxietyFlask import app as application
