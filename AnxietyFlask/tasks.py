@@ -1,13 +1,13 @@
-from AnxietyFlask import app, anxieties, insert_reply, TotalFailure
+from AnxietyFlask import app, TotalFailure
 from AnxietyFlask.mailgun import InMail, OutMail
-from AnxietyFlask.models import Account
+from AnxietyFlask.models import db, Account, Reply
 from flask import url_for
-from celery import Celery, Task
+from celery import Celery
 from requests.exceptions import HTTPError
 
 celery = Celery(app.import_name, broker=app.config['CELERY_BROKER_URL'])
 celery.conf.update(app.config)
-TaskBase = Task
+TaskBase = celery.Task
 class ContextTask(TaskBase):
     abstract = True
     def __call__(self, *args, **kwargs):
@@ -40,15 +40,28 @@ def get_mail():
         if user is None:
             continue #Need to do more here
         else:
-            insert_reply(user.id, message.body)
+            reply = Reply.query.filter_by(account_id=user.id).first()
+            if reply is None:
+                reply = Reply(account_id=user.id, reply=message.parameters['body-html'])
+                db.session.add(reply)
+            else:
+                reply.reply = message.parameters['body-html']
+            db.session.flush()
+    db.session.commit()
 
 @celery.task(name='tasks.send_mail')
 def send_mail():
-    status = anxieties()
-    if isinstance(status, HTTPError):
-        raise TotalFailure(404)
-    else:
-        return status
+    actives = Account.query.filter_by(active = True).all()
+    failed_users = []
+    for user in actives:
+        _subject, _compose = user.email
+        try:
+            OutMail(subject=_subject, body=_compose, to=user.email).send()
+        except HTTPError as _e:
+            if _e.errno == 404:
+                return _e
+            failed_users.append((user, _e.errno))
+        return failed_users
 
 @celery.task(name='tasks.send_activation')
 def send_activation(account):

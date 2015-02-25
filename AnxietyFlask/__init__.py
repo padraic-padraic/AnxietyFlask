@@ -49,35 +49,7 @@ def get_account(_id):
             return Account.query.filter_by(id=_id).first()
         else:
             return Account.query.filter_by(uid=_id).first()
-
-def get_reply(_a_id):
-    with app.app_context():
-        return Reply.query.filter_by(account_id=_a_id).first()
-
-def anxieties():
-    with app.app_context():
-        actives = Account.query.filter_by(active = True).all()
-        failed_users = []
-        for user in actives:
-            _subject, _compose = user.email
-            try:
-                OutMail(subject=_subject, body=_compose, to=user.email).send()
-            except HTTPError as _e:
-                if _e.errno == 404:
-                    return _e
-                failed_users.append((user, _e.errno))
-        return failed_users
-
-def insert_reply(_a_id, message):
-    with app.app_context():
-        reply = get_reply(_a_id)
-        if reply is None:
-            reply = Reply(account_id=_a_id, reply=message)
-            db.session.add(reply)
-        else:
-            reply.reply = message
-        db.session.commit()
-
+        
 def insert_anxiety(_a_id, _anxiety):
     with app.app_context():
         db.session.add(Anxiety(account_id=_a_id, anxiety=_anxiety))
