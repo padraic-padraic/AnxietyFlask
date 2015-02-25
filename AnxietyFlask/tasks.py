@@ -1,6 +1,7 @@
 from AnxietyFlask import app, anxieties, insert_reply, TotalFailure
 from AnxietyFlask.mailgun import InMail, OutMail
 from AnxietyFlask.models import Account
+from flask import url_for
 from celery import Celery, Task
 from requests.exceptions import HTTPError
 
@@ -53,7 +54,7 @@ def send_mail():
 def send_activation(account):
     body = "Hello, " + account.name.split(' ')[0] + ", <br>"
     body += "You've asked us to fill up an Anxiety Flask for you. <br> To confirm that, click"
-    body += "<a href='http://localhost:5000/api/activate?uuid=" + account.uid + "'> this link.</a> <br>"
+    body += url_for('activate') + "?uuid=" + account.uid + "'> this link.</a> <br>"
     body += "Don't worry: every email will have a link to deactivate or delete your account in one click.<br>"
     body += "Best wishes, <br>"
     body += "Your anxiety."

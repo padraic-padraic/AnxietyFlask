@@ -55,17 +55,18 @@ def get_reply(_a_id):
         return Reply.query.filter_by(account_id=_a_id).first()
 
 def anxieties():
-    actives = Account.query.filter_by(active = True).all()
-    failed_users = []
-    for user in actives:
-        _subject, _compose = user.email
-        try:
-            OutMail(subject=_subject, body=_compose, to=user.email).send()
-        except HTTPError as _e:
-            if _e.errno == 404:
-                return _e
-            failed_users.append((user, _e.errno))
-    return failed_users
+    with app.app_context():
+        actives = Account.query.filter_by(active = True).all()
+        failed_users = []
+        for user in actives:
+            _subject, _compose = user.email
+            try:
+                OutMail(subject=_subject, body=_compose, to=user.email).send()
+            except HTTPError as _e:
+                if _e.errno == 404:
+                    return _e
+                failed_users.append((user, _e.errno))
+        return failed_users
 
 def insert_reply(_a_id, message):
     with app.app_context():
@@ -93,16 +94,55 @@ def create_account(_name, _email, _anxieties):
             insert_anxiety(new_account.id, anxiety)
         db.session.commit()
         send_activation(new_account)
-   
-@app.route('/api/activate', methods=['GET'])
-def activate():
-    account = get_account(request.args.get('uuid'))
-    if account.active != True:
-        account.active = True
-    db.session.commit()
-    return render_template('full_page.html', purpose='activate', name=account.name.split(' ')[0])
 
-@app.route('/api/send', methods=['GET'])
+def change_status(account, status):
+    with app.app_context():
+        if account.active != status:
+            account.active = status
+        db.session.commit()
+
+@app.route('/activate', methods=['GET', 'POST'])
+def activate():
+    if request.method == 'POST':
+        account = Account.query.filter_by(email=request.args.get('email'))
+        change_status(account, True)
+        return render_template('full_page.html', purpose='activate', name=account.name.split(' ')[0])
+    if 'uuid' in request.args:
+        account = Account.query.filter_by(uid = request.args.get('uuid'))
+        change_status(account, True)
+        return render_template('full_page.html', purpose='activate', name=account.name.split(' ')[0])
+    else:
+        return render_template('full_page.html', purpose='activate', form=True)
+
+@app.route('/deactivate', methods=['GET', 'POST'])
+def deactivate():
+    if request.method == 'POST':
+        account = Account.query.filter_by(email=request.args.get('email'))
+        change_status(account, True)
+        return render_template('full_page.html', purpose='deactivate', name=account.name.split(' ')[0])
+    if 'uuid' in request.args:
+        account = Account.query.filter_by(uid = request.args.get('uuid'))
+        change_status(account, True)
+        return render_template('full_page.html', purpose='deactivate', name=account.name.split(' ')[0])
+    else:
+        return render_template('full_page.html', purpose='deactivate', form=True)
+
+@app.route('/delete', methods=['GET', 'POST'])
+def delete():
+    if request.method == 'POST':
+        account = Account.query.filter_by(email=request.args.get('email'))
+        db.delete(account)
+        db.session.commit()
+        return render_template('full_page.html', purpose='delete', name=account.name.split(' ')[0])
+    if 'uuid' in request.args:
+        account = Account.query.filter_by(uid = request.args.get('uuid'))
+        db.delete(account)
+        db.session.commit()
+        return render_template('full_page.html', purpose='delete', name=account.name.split(' ')[0])
+    else:
+        return render_template('full_page.html', purpose='delete', form=True)
+
+@app.route('/send', methods=['GET'])
 def send():
     pass
 ## Views

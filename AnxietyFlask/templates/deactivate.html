@@ -1,0 +1,22 @@
+{% if form %}
+<div class="panel panel-defaut">
+<div class="panel-heading">
+<h4 class="panel-title">Enter your email to deacivate your account:</h4>
+</div>
+<div class="panel-body">
+<form class="center-block" id="deactivate" role="form" method="post" action="/deactivate" style="width:75%">
+	<div class="form-group">
+		<label for="email">My email is...</label>
+		<input class="form-control" type="email" form="signup" name="email" placeholder="example@fakemail.net" required>
+	</div>
+	<button type="submit" class="btn btn-primary">Submit</button>
+</form>
+</div>
+</div>
+{% else %}
+<div class="panel panel-default">
+	<div class="panel-heading">
+	<h4 class="panel-title">No worries, {{name}}.</h4></div>
+	<div class="panel-body">You've deactivated your account; that means we'll stop sending you emails. If you want to get going again, any time, just go <a href="{{urlfor('activate')}}">here</a>, or else click <a href="{{ urlfor('delete')}}">here to delete your account forever...</div>
+</div>
+{% endif %}

@@ -1,10 +1,10 @@
 {% if form %}
 <div class="panel panel-defaut">
 <div class="panel-heading">
-<h4 class="panel-title">Enter your email to activate your account:</h4>
+<h4 class="panel-title">Enter your email to delete your account:</h4>
 </div>
 <div class="panel-body">
-<form class="center-block" id="activate" role="form" method="post" action="/activate" style="width:75%">
+<form class="center-block" id="deactivate" role="form" method="post" action="/deactivate" style="width:75%">
 	<div class="form-group">
 		<label for="email">My email is...</label>
 		<input class="form-control" type="email" form="signup" name="email" placeholder="example@fakemail.net" required>
@@ -16,7 +16,7 @@
 {% else %}
 <div class="panel panel-default">
 	<div class="panel-heading">
-	<h4 class="panel-title">Thank you, {{name}}</h4></div>
-	<div class="panel-body">We're all fired up and raring to go. Keep an eye on your inbox!</div>
+	<h4 class="panel-title">Farewell, {{name}}.</h4></div>
+	<div class="panel-body">You've deleted your account. The bot is no more, and never again shall you be emailed (by us).</div>
 </div>
 {% endif %}
