@@ -63,12 +63,6 @@ def get_account(_id):
             return Account.query.filter_by(id=_id).first()
         else:
             return Account.query.filter_by(uid=_id).first()
-        
-def insert_anxiety(_a_id, _anxiety):
-    with app.app_context():
-        db.session.add(Anxiety(account_id=_a_id, anxiety=_anxiety))
-        db.session.flush()
-        db.session.commit()
 
 from AnxietyFlask.tasks import send_activation
 
@@ -78,7 +72,7 @@ def create_account(_name, _email, _anxieties):
         db.session.add(new_account)
         db.session.commit()
         for anxiety in _anxieties:
-            insert_anxiety(new_account.id, anxiety)
+            db.session.add(Anxiety(account_id=new_account.id, anxiety=anxiety))
         db.session.commit()
         send_activation(new_account)
 
