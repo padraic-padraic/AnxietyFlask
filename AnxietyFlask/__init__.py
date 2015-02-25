@@ -68,6 +68,7 @@ def insert_anxiety(_a_id, _anxiety):
     with app.app_context():
         db.session.add(Anxiety(account_id=_a_id, anxiety=_anxiety))
         db.session.flush()
+        db.session.commit()
 
 from AnxietyFlask.tasks import send_activation
 
