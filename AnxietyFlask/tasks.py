@@ -68,7 +68,7 @@ def send_mail():
 def send_activation(account):
     body = "Hello, " + account.name.split(' ')[0] + ", <br>"
     body += "You've asked us to fill up an Anxiety Flask for you. <br> To confirm that, click"
-    body += url_for('activate') + "?uuid=" + account.uid + "'> this link.</a> <br>"
+    body += "<a href='anxietyflask.ddns.net" + url_for('activate') + "?uuid=" + account.uid + "'> this link.</a> <br>"
     body += "Don't worry: every email will have a link to deactivate or delete your account in one click.<br>"
     body += "Best wishes, <br>"
     body += "Your anxiety."
