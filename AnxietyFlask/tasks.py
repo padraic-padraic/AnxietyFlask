@@ -57,7 +57,7 @@ def send_mail():
     for user in actives:
         _subject, _compose = user.email
         try:
-            OutMail(subject=_subject, body=_compose, to=user.email).send()
+            OutMail(subject=_subject, body=_compose, html=_compose, to=user.email).send()
         except HTTPError as _e:
             if _e.errno == 404:
                 return _e
