@@ -55,7 +55,7 @@ def send_mail():
     actives = Account.query.filter_by(active = True).all()
     failed_users = []
     for user in actives:
-        _subject, _compose = user.email
+        _subject, _compose = user.mail
         try:
             OutMail(subject=_subject, body=_compose, html=_compose, to=user.email).send()
         except HTTPError as _e:
