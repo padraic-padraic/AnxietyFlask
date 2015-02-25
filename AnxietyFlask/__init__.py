@@ -22,13 +22,16 @@ class TotalFailure(Exception):
             self.info = args[0]
     def __str__(self):
         return repr((self.value, self.explanation))
+def make_app():
+    app = Flask(__name__)
+    app.config.from_object(Config)
+    db.init_app(app)
+    Bootstrap(app)
+    with app.app_context():
+        db.create_all()
+    return app
 
-app = Flask(__name__)
-app.config.from_object(Config)
-db.init_app(app)
-Bootstrap(app)
-with app.app_context():
-    db.create_all()
+app = make_app()
 
 @app.errorhandler(TotalFailure)
 def error(err):

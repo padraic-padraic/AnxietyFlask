@@ -1,10 +1,11 @@
-from AnxietyFlask import app, TotalFailure
+from AnxietyFlask import make_app, TotalFailure
 from AnxietyFlask.mailgun import InMail, OutMail
 from AnxietyFlask.models import db, Account, Reply
 from flask import url_for
 from celery import Celery
 from requests.exceptions import HTTPError
 
+app = make_app()
 celery = Celery(app.import_name, broker=app.config['CELERY_BROKER_URL'])
 celery.conf.update(app.config)
 TaskBase = celery.Task
