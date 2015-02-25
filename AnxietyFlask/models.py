@@ -15,11 +15,11 @@ class Account(db.Model):
     active = db.Column(db.Boolean)
 
     def include_reply(self):
-        if datetime.now() - self.reply.last_included > timedelta(days=2):
-            self.reply.last_included = datetime.now()
-            return self.reply.reply
-        else:
-            return None
+        if self.reply is not None:
+            if datetime.now() - self.reply.last_included > timedelta(days=2):
+                self.reply.last_included = datetime.now()
+                return self.reply.reply
+        return None
 
     def choose_anxiety(self):
         return choice(self.anxieties.all()).anxiety
