@@ -22,7 +22,7 @@ class Account(db.Model):
             return None
 
     def choose_anxiety(self):
-        return choice(self.anxieties).anxiety
+        return choice(self.anxieties.all()).anxiety
 
     @property
     def mail(self):
