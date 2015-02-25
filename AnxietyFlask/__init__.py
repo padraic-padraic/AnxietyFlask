@@ -36,9 +36,20 @@ app = make_app()
 @app.errorhandler(TotalFailure)
 def error(err):
     return render_template('full_page.html', purpose='error', code=err.value, explanation=err.explanation, info=err.info)
+
 @app.errorhandler(404)
 def not_found(e):
     err = TotalFailure(404)
+    return render_template('full_page.html', purpose='error', code=err.value, explanation=err.explanation)
+
+@app.errorhandler(400)
+def bad_request(e):
+    err = TotalFailure(400)
+    return render_template('full_page.html', purpose='error', code=err.value, explanation=err.explanation)
+
+@app.errorhandler(500)
+def sever_error(e):
+    err = TotalFailure(500)
     return render_template('full_page.html', purpose='error', code=err.value, explanation=err.explanation)
 
 ##Helpful Functions
@@ -70,59 +81,68 @@ def create_account(_name, _email, _anxieties):
         db.session.commit()
         send_activation(new_account)
 
-def change_status(account, status):
+def change_status(status, email = None, uuid=None):
+    if not any((uuid, email)):
+        raise TotalFailure(400, 'No account information provided')
     with app.app_context():
+        if email: 
+            account = Account.query.filter_by(email=email).first()
+        else:
+            account = Account.query.filter_by(uid=uuid).first()
         if account is None:
             raise TotalFailure(404, 'No account found with that email address.')
         if account.active != status:
             account.active = status
         db.session.commit()
+        return account.id
 
 @app.route('/activate', methods=['GET', 'POST'])
 def activate():
     if request.method == 'POST':
-        account = Account.query.filter_by(email=request.args.get('email')).first()
-        change_status(account, True)
-        return render_template('full_page.html', purpose='activate', name=account.name.split(' ')[0])
-    if 'uuid' in request.args:
-        account = Account.query.filter_by(uid = request.args.get('uuid')).first()
-        change_status(account, True)
-        return render_template('full_page.html', purpose='activate', name=account.name.split(' ')[0])
+        _id = change_status(True, email=request.form['email'])
+    elif 'uuid' in request.args:
+        _id = change_status(True, uuid=request.args.get('uuid'))
     else:
         return render_template('full_page.html', purpose='activate', form=True)
+    account = Account.query.filter_by(id=_id).first()
+    return render_template('full_page.html', purpose='activate', name=account.name.split(' ')[0])
+
 
 @app.route('/deactivate', methods=['GET', 'POST'])
 def deactivate():
     if request.method == 'POST':
-        account = Account.query.filter_by(email=request.args.get('email')).first()
-        change_status(account, True)
-        return render_template('full_page.html', purpose='deactivate', name=account.name.split(' ')[0])
+        _id = change_status(True, email=request.form['email'])
     if 'uuid' in request.args:
-        account = Account.query.filter_by(uid = request.args.get('uuid')).first()
-        change_status(account, True)
-        return render_template('full_page.html', purpose='deactivate', name=account.name.split(' ')[0])
+        _id = change_status(True, uuid=request.args.get('uuid'))
     else:
         return render_template('full_page.html', purpose='deactivate', form=True)
+    account = Account.query.filter_by(id=_id).first()
+    return render_template('full_page.html', purpose='deactivate', name=account.name.split(' ')[0])
 
-def delete_account(account):
+def delete_account(email = None, uuid=None):
+    if not any((uuid, email)):
+        raise TotalFailure(400, 'No account information provided')
     with app.app_context():
+        if email:
+            account = Account.query.filter_by(email=email).first()
+        else:
+            account = Account.query.filter_by(uid=uuid).first()
         if account is None:
             raise TotalFailure(404, 'No account found with that email address.')
+        db.delete(account)
+        db.session.commit()
+        return account.id
 
 @app.route('/delete', methods=['GET', 'POST'])
 def delete():
     if request.method == 'POST':
-        account = Account.query.filter_by(email=request.args.get('email')).first()
-        db.delete(account)
-        db.session.commit()
-        return render_template('full_page.html', purpose='delete', name=account.name.split(' ')[0])
+        _id = delete_account(email=request.form['email'])
     if 'uuid' in request.args:
-        account = Account.query.filter_by(uid = request.args.get('uuid')).first()
-        db.delete(account)
-        db.session.commit()
-        return render_template('full_page.html', purpose='delete', name=account.name.split(' ')[0])
+        _id = delete_account(uuid=request.args.get('uuid'))
     else:
         return render_template('full_page.html', purpose='delete', form=True)
+    account = Account.query.filter_by(id=_id).first()
+    return render_template('full_page.html', purpose='delete', name=account.name.split(' ')[0])
 
 @app.route('/send', methods=['GET'])
 def send():
