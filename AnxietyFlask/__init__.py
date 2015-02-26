@@ -73,7 +73,7 @@ def create_account(_name, _email, _anxieties):
         db.session.add(new_account)
         db.session.commit()
         for anxiety in _anxieties:
-            process(anxiety)
+            anxiety = process(anxiety)
             db.session.add(Anxiety(account_id=new_account.id, anxiety=anxiety))
             db.session.flush()
         db.session.commit()
