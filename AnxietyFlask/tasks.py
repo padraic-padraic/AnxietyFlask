@@ -55,21 +55,41 @@ def send_mail():
     actives = Account.query.filter_by(active = True).all()
     failed_users = []
     for user in actives:
-        _subject, _compose = user.mail
+        _subject, plain_text, html = user.mail
         try:
-            OutMail(subject=_subject, body=_compose, html=_compose, to=user.email).send()
+            OutMail(subject=_subject, body=plain_text, html=html, to=user.email).send()
         except HTTPError as _e:
             if _e.errno == 404:
                 return _e
             failed_users.append((user, _e.errno))
         return failed_users
 
+
+ACTIVATION_TEMPLATE = """
+Dear {0},
+
+You've asked us to fill up an Anxiety Flask for you. 
+
+To confirm that, click this link:
+anxietyflask.ddns.net/activate?uuid={1}
+
+Don't worry. If it gets overwhelming, each email will have a link to deactivate or delete your account in one click. Or, you can do it any time at 
+anxietyflask.ddns.net/deactivate
+anxietyflask.ddns.net/delete
+
+Sincerely, 
+Your Anxiety
+"""
+
+ACTIVATION_HTML = """
+Dear {0}, <br>
+You've asked us to fill up an Anxiety Flask for you. <br>
+To confirm that, click <a href="anxietyflask.ddns.net/activate?uuid={1}>here</a>. <br>
+Don't worry, if it gets overwhelming you can always <a href="anxietyflask.ddns.net/deactivate>deactivate</a> or <a href="anxietyflask.ddns.net/delete">delete</a> your account.<br>
+Sincerely, <br> Your Anxiety
+"""
 @celery.task(name='tasks.send_activation')
 def send_activation(account):
-    body = "Hello, " + account.name.split(' ')[0] + ", <br>"
-    body += "You've asked us to fill up an Anxiety Flask for you. <br> To confirm that, click"
-    body += "<a href='anxietyflask.ddns.net" + url_for('activate') + "?uuid=" + account.uid + "'> this link.</a> <br>"
-    body += "Don't worry: every email will have a link to deactivate or delete your account in one click.<br>"
-    body += "Best wishes, <br>"
-    body += "Your anxiety."
-    OutMail(to=account.email, text=body, html=body, subject="Open up your Anxiety Flask").send()
+    plain = ACTIVATION_TEMPLATE.format(account.name.split(' ')[0], account.uid)
+    html = ACTIVATION_HTML.format(account.name.split(' ')[0], account.uid)    
+    OutMail(to=account.email, text=plain, html=html, subject="Confirm your account").send()

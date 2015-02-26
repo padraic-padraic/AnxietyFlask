@@ -42,20 +42,47 @@ def quoth_the_bot(reply):
         return capitalise(randth('youknow') + ' ' + randth('datespan')
                           + ' ' + randth('action') + ', ' + reply + '-- and '
                           + randth('youknow') + ' ' + randth('indicators')
-                          + ' ' + monster()) + "<br>"
-    return "<br>"
+                          + ' ' + monster())
+    return ""
 
 def subject():
     return capitalise(randth('indicators') + ' ' + monster()).encode('ascii')
 
+EMAIL_TEMPLATE = """
+
+Dear {0},
+
+{1}
+
+{2}
+
+{3}
+
+{4}
+
+{5}
+
+Sincerely, 
+
+Your Anxiety
+"""
+HTML_TEMPLATE = """
+Dear {0}, <br>
+{1} <br>
+{2} <br>
+{3} <br>
+{4} <br>
+{5} <br>
+Sincerely, <br> Your Anxiety
+"""
+
 def compose(name, anxiety, reply):
-    _str = "Dear " + name + ", <br>"
-    _str += capitalise(randth('contemplatives') + ' ' + anxiety)
-    _str += "<br><br>"
-    _str += capitalise(randth('interrogatories') + ' ' + randth('offers')
+    question = capitalise(rndth('contemplatives') + ' ' + anxiety)
+    check_in = capitalise(randth('interrogatories') + ' ' + randth('offers')
                        + " \"" + anxiety + "\"-- " + randth('interrogatories'))
-    _str += "<br>" + quoth_the_bot(reply)
-    _str += capitalise(randth('returns') + ' ' + randth('interrogatories')) + ' '
-    _str += capitalise(randth('returns') + ' ' + randth('call-to-action'))
-    _str += "<br>Sincerely,<br>Your Anxiety"
-    return _str
+    quote = quoth_the_bot(reply)
+    closer = capitalise(randth('returns') + ' ' + randth('interrogatories'))
+    closer += capitalise(randth('returns') + ' ' + randth('call-to-action'))
+    plain = EMAIL_TEMPLATE.format(name, question, check_in, quote, closer)
+    html = HTML_TEMPLATE.format(name, question, check_in, quote, closer)
+    return plain, html
