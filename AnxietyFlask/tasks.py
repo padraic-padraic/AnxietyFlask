@@ -84,7 +84,7 @@ Your Anxiety
 ACTIVATION_HTML = """
 Dear {0}, <br>
 You've asked us to fill up an Anxiety Flask for you. <br>
-To confirm that, click <a href="anxietyflask.ddns.net/activate?uuid={1}>here</a>. <br>
+To confirm that, click <a href="anxietyflask.ddns.net/activate?uuid={1}"> here</a>. <br>
 Don't worry, if it gets overwhelming you can always <a href="anxietyflask.ddns.net/deactivate>deactivate</a> or <a href="anxietyflask.ddns.net/delete">delete</a> your account.<br>
 Sincerely, <br> Your Anxiety
 """

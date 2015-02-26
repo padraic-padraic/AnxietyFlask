@@ -42,7 +42,7 @@ def quoth_the_bot(reply):
         return capitalise(randth('youknow') + ' ' + randth('datespan')
                           + ' ' + randth('action') + ', ' + reply + '-- and '
                           + randth('youknow') + ' ' + randth('indicators')
-                          + ' ' + monster())
+                          + ' ' + monster()) + "\n"
     return ""
 
 def subject():
@@ -57,10 +57,7 @@ Dear {0},
 {2}
 
 {3}
-
 {4}
-
-{5}
 
 Sincerely, 
 
@@ -72,12 +69,11 @@ Dear {0}, <br>
 {2} <br>
 {3} <br>
 {4} <br>
-{5} <br>
 Sincerely, <br> Your Anxiety
 """
 
 def compose(name, anxiety, reply):
-    question = capitalise(rndth('contemplatives') + ' ' + anxiety)
+    question = capitalise(randth('contemplatives') + ' ' + anxiety)
     check_in = capitalise(randth('interrogatories') + ' ' + randth('offers')
                        + " \"" + anxiety + "\"-- " + randth('interrogatories'))
     quote = quoth_the_bot(reply)
