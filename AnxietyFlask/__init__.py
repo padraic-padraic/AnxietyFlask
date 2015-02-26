@@ -2,6 +2,7 @@
 Mostly done as a personal exercise to build a bigger app in Flask
 and learn SQLAlchemy/Sending mail"""
 
+from AnxietyFlask.anxiety_bot import process
 from AnxietyFlask.config import Config
 from AnxietyFlask.mailgun import InMail, OutMail
 from AnxietyFlask.models import db, Account, Anxiety, Reply
@@ -72,7 +73,9 @@ def create_account(_name, _email, _anxieties):
         db.session.add(new_account)
         db.session.commit()
         for anxiety in _anxieties:
+            process(anxiety)
             db.session.add(Anxiety(account_id=new_account.id, anxiety=anxiety))
+            db.session.flush()
         db.session.commit()
         send_activation(new_account)
 

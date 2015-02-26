@@ -8,6 +8,17 @@ import json
 FRAGMENTS = json.load(open(WORK_DIR+'fragments.json'))
 PERSON = json.load(open(WORK_DIR+'person.json'))
 
+def change_person(_str):
+    _str.replace(" I ", " you ")
+    _str.replace("my", "your")
+    return _str
+
+def uncapitalise(_str):
+    return _str[:1].lower() + _str[1:]
+
+def process(anxiety):
+    return uncapitalise(change_person(anxiety))
+
 def and_join(_list):
     return ', '.join(_list[:-1]) + ' and ' + _list[-1]
 
@@ -18,7 +29,7 @@ def monster():
 
 def capitalise(_str):
     _str = _str[:1].upper() + _str[1:]
-    if _str[-1] != '.':
+    if not _str[-1] in ['.', '!', '?']:
         _str += '.'
     return _str
 
