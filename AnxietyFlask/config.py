@@ -11,7 +11,7 @@ class Config():
     CELERYBEAT_SCHEDULE = {
         'Email every now and again': {
             'task': 'tasks.send_mail',
-            'schedule': crontab(hour='0, 4, 7, 10, 11, 12, 13, 15, 16, 18, 19, 22'),
+            'schedule': crontab(hour='0, 4, 7, 10, 11, 12, 13, 15, 16, 18, 19, 22', minute='0'),
             'options': {'countdown': int(3600*random())}
             },
         'Get Mail': {

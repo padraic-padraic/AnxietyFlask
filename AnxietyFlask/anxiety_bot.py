@@ -9,8 +9,8 @@ FRAGMENTS = json.load(open(WORK_DIR+'fragments.json'))
 PERSON = json.load(open(WORK_DIR+'person.json'))
 
 def change_person(_str):
-    _str.replace(" I ", " you ")
-    _str.replace("my", "your")
+    _str = _str.replace(" I ", " you ")
+    _str = _str.replace("my", "your")
     return _str
 
 def uncapitalise(_str):
