@@ -26,7 +26,7 @@ class Account(db.Model):
 
     @property
     def mail(self):
-        return subject(), compose(self.name, self.choose_anxiety(), self.include_reply())
+        return subject(), compose(self.uid, self.name, self.choose_anxiety(), self.include_reply())
 
 class Anxiety(db.Model):
     id = db.Column(db.Integer, primary_key=True)

@@ -64,21 +64,23 @@ Sincerely,
 Your Anxiety
 """
 HTML_TEMPLATE = """
-Dear {0}, <br>
+Dear {0}, <br><br>
 {1} <br>
 {2} <br>
 {3} <br>
-{4} <br>
-Sincerely, <br> Your Anxiety
+{4} <br><br>
+Sincerely, <br> Your Anxiety <br>
+<a href="anxietylask.ddns.net/deactivate?uuid={uid}">Deactivate</a> or <a href="anxietyflask.ddns.net/delete?uuid={uid}>delete</a>
+your account here.
 """
 
-def compose(name, anxiety, reply):
+def compose(uid, name, anxiety, reply):
     question = capitalise(randth('contemplatives') + ' ' + anxiety)
     check_in = capitalise(randth('interrogatories') + ' ' + randth('offers')
                        + " \"" + anxiety + "\"-- " + randth('interrogatories'))
     quote = quoth_the_bot(reply)
     closer = capitalise(randth('returns') + ' ' + randth('interrogatories'))
     closer += capitalise(randth('returns') + ' ' + randth('call-to-action'))
-    plain = EMAIL_TEMPLATE.format(name, question, check_in, quote, closer)
-    html = HTML_TEMPLATE.format(name, question, check_in, quote, closer)
+    plain = EMAIL_TEMPLATE.format(name, question, check_in, quote, closer, uid=uid)
+    html = HTML_TEMPLATE.format(name, question, check_in, quote, closer, uid=uid)
     return plain, html
