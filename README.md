@@ -14,7 +14,7 @@ Once you've set the database URI and entered your mailgun details, you can mess 
 ```
    pip install -r requirements.txt
    screen -d -m redis-server
-   screen -d -m celery -A AnxietyFlask.tasks worker -B
+   screen -d -m celery -A AnxietyFlask.tasks.celery worker -B
    python AnxietyFlask/runserver.py
 ```
 And it will be available on localhost:5000.
