@@ -70,7 +70,7 @@ Dear {0}, <br><br>
 {3} <br>
 {4} <br><br>
 Sincerely, <br> Your Anxiety <br>
-<a href="anxietylask.ddns.net/deactivate?uuid={uid}">Deactivate</a> or <a href="anxietyflask.ddns.net/delete?uuid={uid}>delete</a>
+<a href="anxietylask.ddns.net/deactivate?uuid={uid}">Deactivate</a> or <a href="anxietyflask.ddns.net/delete?uuid={uid}">delete</a>
 your account here.
 """
 
