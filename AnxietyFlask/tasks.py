@@ -63,7 +63,7 @@ def send_mail():
             if _e.errno == 404:
                 return _e
             failed_users.append((user, _e.errno))
-        return failed_users
+    return failed_users
 
 
 ACTIVATION_TEMPLATE = """

@@ -91,7 +91,7 @@ def change_status(status, email = None, uuid=None):
             raise TotalFailure(404, 'No account found with that email address.')
         if account.active != status:
             account.active = status
-        db.session.commit()
+            db.session.commit()
         return account.id
 
 @app.route('/activate', methods=['GET', 'POST'])
@@ -109,9 +109,9 @@ def activate():
 @app.route('/deactivate', methods=['GET', 'POST'])
 def deactivate():
     if request.method == 'POST':
-        _id = change_status(True, email=request.form['email'])
-    if 'uuid' in request.args:
-        _id = change_status(True, uuid=request.args.get('uuid'))
+        _id = change_status(False, email=request.form['email'])
+    elif 'uuid' in request.args:
+        _id = change_status(False, uuid=request.args.get('uuid'))
     else:
         return render_template('full_page.html', purpose='deactivate', form=True)
     account = Account.query.filter_by(id=_id).first()
@@ -135,7 +135,7 @@ def delete_account(email = None, uuid=None):
 def delete():
     if request.method == 'POST':
         _id = delete_account(email=request.form['email'])
-    if 'uuid' in request.args:
+    elif 'uuid' in request.args:
         _id = delete_account(uuid=request.args.get('uuid'))
     else:
         return render_template('full_page.html', purpose='delete', form=True)
