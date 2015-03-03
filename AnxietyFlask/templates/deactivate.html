@@ -17,6 +17,6 @@
 <div class="panel panel-default">
 	<div class="panel-heading">
 	<h4 class="panel-title">No worries, {{name}}.</h4></div>
-	<div class="panel-body">You've deactivated your account; that means we'll stop sending you emails. If you want to get going again, any time, just go <a href="{{urlfor('activate')}}">here</a>, or else click <a href="{{ urlfor('delete')}}">here to delete your account forever...</div>
+	<div class="panel-body">You've deactivated your account; that means we'll stop sending you emails. If you want to get going again, any time, just go <a href="{{url_for('activate')}}">here</a>, or else click <a href="{{ url_for('delete')}}">here to delete your account forever...</div>
 </div>
 {% endif %}
