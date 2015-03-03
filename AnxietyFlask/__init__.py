@@ -127,7 +127,7 @@ def delete_account(email = None, uuid=None):
             account = Account.query.filter_by(uid=uuid).first()
         if account is None:
             raise TotalFailure(404, 'No account found with that email address.')
-        db.delete(account)
+        db.session.delete(account)
         db.session.commit()
         return account.id
 
