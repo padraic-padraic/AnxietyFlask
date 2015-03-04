@@ -127,20 +127,20 @@ def delete_account(email = None, uuid=None):
             account = Account.query.filter_by(uid=uuid).first()
         if account is None:
             raise TotalFailure(404, 'No account found with that email address.')
+        name = account.name.split(' ')[0]
         db.session.delete(account)
         db.session.commit()
-        return account.id
+        return name
 
 @app.route('/delete', methods=['GET', 'POST'])
 def delete():
     if request.method == 'POST':
-        _id = delete_account(email=request.form['email'])
+        name = delete_account(email=request.form['email'])
     elif 'uuid' in request.args:
-        _id = delete_account(uuid=request.args.get('uuid'))
+        name = delete_account(uuid=request.args.get('uuid'))
     else:
         return render_template('full_page.html', purpose='delete', form=True)
-    account = Account.query.filter_by(id=_id).first()
-    return render_template('full_page.html', purpose='delete', name=account.name.split(' ')[0])
+    return render_template('full_page.html', purpose='delete', name=name)
 
 @app.route('/send', methods=['GET'])
 def send():
