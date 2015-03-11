@@ -23,11 +23,36 @@ img.bg {
     margin-left: -512px;   /* 50% */
   }
 }
+html,
+body {
+  height: 100%;
+}
+#wrap {
+  min-height: 100%;
+  height: auto;
+  margin: 0 auto -20px;
+  padding: 0 0 20px;
+}
+
+#footer {
+  height: 20px;
+  background-color: #f5f5f5;
+}
+
 </style>
 {% set img = purpose + '.gif' %}
 {% set temp = purpose + '.html' %}
 <img class="bg" src="{{url_for('static', filename=img)}}">
-<div style="margin-top:10%; width:50%;" class="center-block">
-{% include temp %}
+<div id="wrap">
+  <div class="container-fluid">
+    <div style="margin-top:10%; width:50%;" class="center-block">
+    {% include temp %}
+    </div>
+  </div>
 </div>
+<footer id="footer">
+  <div class="container-fluid">
+    <p class="muted credit">Background image from <a href="{{source[0]}}">{{ source[1] }}</a></p>
+  </div>
+</footer>
 {% endblock %}

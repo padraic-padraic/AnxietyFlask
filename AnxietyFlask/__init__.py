@@ -34,24 +34,29 @@ def make_app():
 
 app = make_app()
 
+BACKGROUND_IMAGES={'error':['http://xkcd.com/961', 'XKCD by Randall Monroe'],
+                   'activate':['http://blog.newspaperclub.com/2012/11/02/newspaper-animated-gifs/', 'The Newspaper Club'],
+                   'deactivate':['https://www.youtube.com/watch?v=jJaft0a5VXc','Youtube Video of the Syndey Analogue TV Shutdown'],
+                   'delete':['http://d36wcktvpv3t5z.cloudfront.net/images/3c48b6db-6cd1-4db4-bc71-7a437fdac7a3.gif','Office Space, gif creator unattributeable']}
+
 @app.errorhandler(TotalFailure)
 def error(err):
-    return render_template('full_page.html', purpose='error', code=err.value, explanation=err.explanation, info=err.info)
+    return render_template('full_page.html', purpose='error', source=BACKGROUND_IMAGES['error'], code=err.value, explanation=err.explanation, info=err.info)
 
 @app.errorhandler(404)
 def not_found(e):
     err = TotalFailure(404)
-    return render_template('full_page.html', purpose='error', code=err.value, explanation=err.explanation)
+    return render_template('full_page.html', purpose='error', source=BACKGROUND_IMAGES['error'], code=err.value, explanation=err.explanation)
 
 @app.errorhandler(400)
 def bad_request(e):
     err = TotalFailure(400)
-    return render_template('full_page.html', purpose='error', code=err.value, explanation=err.explanation)
+    return render_template('full_page.html', purpose='error', source=BACKGROUND_IMAGES['error'], code=err.value, explanation=err.explanation)
 
 @app.errorhandler(500)
 def sever_error(e):
     err = TotalFailure(500)
-    return render_template('full_page.html', purpose='error', code=err.value, explanation=err.explanation)
+    return render_template('full_page.html', purpose='error', source=BACKGROUND_IMAGES['error'], code=err.value, explanation=err.explanation)
 
 ##Helpful Functions
 def get_account_id(_uuid):
@@ -94,6 +99,7 @@ def change_status(status, email = None, uuid=None):
             db.session.commit()
         return account.id
 
+
 @app.route('/activate', methods=['GET', 'POST'])
 def activate():
     if request.method == 'POST':
@@ -101,9 +107,9 @@ def activate():
     elif 'uuid' in request.args:
         _id = change_status(True, uuid=request.args.get('uuid'))
     else:
-        return render_template('full_page.html', purpose='activate', form=True)
+        return render_template('full_page.html', purpose='activate', source=BACKGROUND_IMAGES['activate'], form=True)
     account = Account.query.filter_by(id=_id).first()
-    return render_template('full_page.html', purpose='activate', name=account.name.split(' ')[0])
+    return render_template('full_page.html', purpose='activate', source=BACKGROUND_IMAGES['activate'], name=account.name.split(' ')[0])
 
 
 @app.route('/deactivate', methods=['GET', 'POST'])
@@ -113,9 +119,9 @@ def deactivate():
     elif 'uuid' in request.args:
         _id = change_status(False, uuid=request.args.get('uuid'))
     else:
-        return render_template('full_page.html', purpose='deactivate', form=True)
+        return render_template('full_page.html', purpose='deactivate', source=BACKGROUND_IMAGES['deactivate'], form=True)
     account = Account.query.filter_by(id=_id).first()
-    return render_template('full_page.html', purpose='deactivate', name=account.name.split(' ')[0])
+    return render_template('full_page.html', purpose='deactivate', source=BACKGROUND_IMAGES['deactivate'], name=account.name.split(' ')[0])
 
 def delete_account(email = None, uuid=None):
     if not any((uuid, email)):
@@ -139,8 +145,8 @@ def delete():
     elif 'uuid' in request.args:
         name = delete_account(uuid=request.args.get('uuid'))
     else:
-        return render_template('full_page.html', purpose='delete', form=True)
-    return render_template('full_page.html', purpose='delete', name=name)
+        return render_template('full_page.html', purpose='delete', source=BACKGROUND_IMAGES['delete'], form=True)
+    return render_template('full_page.html', purpose='delete', source=BACKGROUND_IMAGES['delete'], name=name)
 
 @app.route('/send', methods=['GET'])
 def send():
