@@ -60,7 +60,7 @@ class InMail(Mail):
                        pretty='no', event='stored').do_request('events', 'get')
         messages = []
         for item in events['items']:
-            data = Mail().do_request('messages/'+ item['sotrage']['key'], 'get')
+            data = Mail().do_request('messages/'+ item['storage']['key'], 'get')
             messages.append(cls().from_dict(data))
             cls().do_request('messages/' + item['sotrage']['key'], 'delete')
         return messages
