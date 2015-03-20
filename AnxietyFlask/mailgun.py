@@ -62,7 +62,7 @@ class InMail(Mail):
         for item in events['items']:
             data = Mail().do_request('messages/'+ item['storage']['key'], 'get')
             messages.append(cls().from_dict(data))
-            cls().do_request('messages/' + item['sotrage']['key'], 'delete')
+            cls().do_request('messages/' + item['storage']['key'], 'delete')
         return messages
 
 class OutMail(Mail):
