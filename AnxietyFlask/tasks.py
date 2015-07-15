@@ -1,10 +1,12 @@
 from AnxietyFlask import make_app, AFException
+from AnxietyFlask.config import DOMAIN
 from AnxietyFlask.emails import ACTIVATION_TEMPLATE, ACTIVATION_HTML
 from AnxietyFlask.mailgun import InMail, OutMail
 from AnxietyFlask.models import db, Account, Reply
 from flask import url_for
 from celery import Celery
 from requests.exceptions import HTTPError
+from random import random, shuffle
 
 app = make_app()
 celery = Celery(app.import_name, broker=app.config['CELERY_BROKER_URL'])
@@ -42,17 +44,18 @@ def get_mail():
 @celery.task(name='tasks.send_mail')
 def send_mail():
     actives = Account.query.filter_by(active = True).all()
-    failed_users = []
+    shuffle(actives)
     for user in actives:
-        _subject, emails = user.mail
-        plain_text, html = emails
-        try:
-            OutMail(subject=_subject, body=plain_text, html=html, to=user.email).send()
-        except HTTPError as _e:
-            if _e.errno == 404:
-                return _e
-            failed_users.append((user, _e.errno))
-    return failed_users
+        your_anxiety.delay(countdown=random()*3600)
+
+@celery.task(name='tasks.your_anxiety')
+def anxiety_nudge(user):
+    _subject, emails = user.mail
+    plain_text, html = emails
+    try:
+        OutMail(subject=_subject, body=plain_text, html=html, to=user.email).send()
+    except HTTPError as _e:
+        pass
 
 
 @celery.task(name='tasks.send_activation')

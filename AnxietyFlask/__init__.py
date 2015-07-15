@@ -59,6 +59,20 @@ def bad_request(e):
 def sever_error(e):
     err = AFException(500)
     return render_template('full_page.html', purpose='error', source=BACKGROUND_IMAGES['error'], code=err.value, explanation=err.explanation)
+#CSRF Token Snippet from http://flask.pocoo.org/snippets/3/
+@app.before_request
+def csrf_protect():
+    if request.method == "POST":
+        token = session.pop('_csrf_token', None)
+        if not token or token != request.form.get('_csrf_token'):
+            abort(403)
+
+def generate_csrf_token():
+    if '_csrf_token' not in session:
+        session['_csrf_token'] = some_random_string()
+    return session['_csrf_token']
+
+app.jinja_env.globals['csrf_token'] = generate_csrf_token
 
 ##Helpful Functions, should these be class methods? (would remove the need for all these app contexts...
 def get_account_id(_uuid):

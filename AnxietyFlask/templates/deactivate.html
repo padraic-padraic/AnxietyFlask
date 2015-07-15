@@ -5,6 +5,7 @@
 </div>
 <div class="panel-body">
 <form class="center-block" id="deactivate" role="form" method="post" action="/deactivate" style="width:75%">
+    <input name=_csrf_token type=hidden value="{{ csrf_token() }}">
 	<div class="form-group">
 		<label for="email">My email is...</label>
 		<input class="form-control" type="email" form="deactivate" name="email" placeholder="example@fakemail.net" required>

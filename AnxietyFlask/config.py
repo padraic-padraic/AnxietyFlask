@@ -1,5 +1,4 @@
 from celery.schedules import crontab
-from random import random
 
 WORK_DIR = '/Users/padraic/AnxietyFlask/AnxietyFlask/'
 DOMAIN = 'your.domain'
