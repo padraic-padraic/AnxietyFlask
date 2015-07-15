@@ -12,7 +12,8 @@ from random import choice
 from requests.exceptions import HTTPError
 from uuid import uuid4
 
-class TotalFailure(Exception):
+class AFException(Exception):
+    """Wrapper around HTTP exceptions used for my error pages."""
     explanations = {400: 'Something is wrong with the request.',
                          404: 'This doesn\'t, and perhaps shall never, exist.',
                          500: 'Something went very wrong. On our end. We\'re on it.'}
@@ -23,6 +24,7 @@ class TotalFailure(Exception):
             self.info = args[0]
     def __str__(self):
         return repr((self.value, self.explanation))
+
 def make_app():
     app = Flask(__name__)
     app.config.from_object(Config)
@@ -36,29 +38,29 @@ app = make_app()
 
 BACKGROUND_IMAGES={'error':['http://xkcd.com/961', 'XKCD by Randall Monroe'],
                    'activate':['http://blog.newspaperclub.com/2012/11/02/newspaper-animated-gifs/', 'The Newspaper Club'],
-                   'deactivate':['https://www.youtube.com/watch?v=jJaft0a5VXc','Youtube Video of the Syndey Analogue TV Shutdown'],
-                   'delete':['http://d36wcktvpv3t5z.cloudfront.net/images/3c48b6db-6cd1-4db4-bc71-7a437fdac7a3.gif','Office Space, gif creator unattributeable']}
+                   'deactivate':['https://www.youtube.com/watch?v=jJaft0a5VXc','Youtube, Syndey Analogue TV Shutdown'],
+                   'delete':['http://d36wcktvpv3t5z.cloudfront.net/images/3c48b6db-6cd1-4db4-bc71-7a437fdac7a3.gif','Office Space, creator unattributeable']}
 
-@app.errorhandler(TotalFailure)
+@app.errorhandler(AFException)
 def error(err):
     return render_template('full_page.html', purpose='error', source=BACKGROUND_IMAGES['error'], code=err.value, explanation=err.explanation, info=err.info)
 
 @app.errorhandler(404)
 def not_found(e):
-    err = TotalFailure(404)
+    err = AFException(404)
     return render_template('full_page.html', purpose='error', source=BACKGROUND_IMAGES['error'], code=err.value, explanation=err.explanation)
 
 @app.errorhandler(400)
 def bad_request(e):
-    err = TotalFailure(400)
+    err = AFException(400)
     return render_template('full_page.html', purpose='error', source=BACKGROUND_IMAGES['error'], code=err.value, explanation=err.explanation)
 
 @app.errorhandler(500)
 def sever_error(e):
-    err = TotalFailure(500)
+    err = AFException(500)
     return render_template('full_page.html', purpose='error', source=BACKGROUND_IMAGES['error'], code=err.value, explanation=err.explanation)
 
-##Helpful Functions
+##Helpful Functions, should these be class methods? (would remove the need for all these app contexts...
 def get_account_id(_uuid):
     with app.app_context():
         return Account.query.filter_by(uid=_uuid).first().account_id
@@ -70,6 +72,7 @@ def get_account(_id):
         else:
             return Account.query.filter_by(uid=_id).first()
 
+##Here? Really?
 from AnxietyFlask.tasks import send_activation
 
 def create_account(_name, _email, _anxieties):
@@ -82,18 +85,18 @@ def create_account(_name, _email, _anxieties):
             db.session.add(Anxiety(account_id=new_account.id, anxiety=anxiety))
             db.session.flush()
         db.session.commit()
-        send_activation(new_account)
+        send_activation.delay(new_account)
 
 def change_status(status, email = None, uuid=None):
     if not any((uuid, email)):
-        raise TotalFailure(400, 'No account information provided')
+        raise AFException(400, 'No account information provided')
     with app.app_context():
-        if email: 
+        if email:
             account = Account.query.filter_by(email=email).first()
         else:
             account = Account.query.filter_by(uid=uuid).first()
         if account is None:
-            raise TotalFailure(404, 'No account found with that email address.')
+            raise AFException(404, 'No account found with that email address.')
         if account.active != status:
             account.active = status
             db.session.commit()
@@ -125,14 +128,14 @@ def deactivate():
 
 def delete_account(email = None, uuid=None):
     if not any((uuid, email)):
-        raise TotalFailure(400, 'No account information provided')
+        raise AFException(400, 'No account information provided')
     with app.app_context():
         if email:
             account = Account.query.filter_by(email=email).first()
         else:
             account = Account.query.filter_by(uid=uuid).first()
         if account is None:
-            raise TotalFailure(404, 'No account found with that email address.')
+            raise AFException(404, 'No account found with that email address.')
         name = account.name.split(' ')[0]
         db.session.delete(account)
         db.session.commit()
@@ -150,6 +153,7 @@ def delete():
 
 @app.route('/send', methods=['GET'])
 def send():
+#I created this to manually review bouncing emails... How?
     pass
 ## Views
 @app.route('/', methods=['GET'])
@@ -162,4 +166,4 @@ def signup():
         create_account(request.form['name'], request.form['email'], request.form['anxieties'].split(', '))
         return render_template('full_page.html', purpose='welcome', name=request.form['name'].split(' ')[0])
     else:
-        raise TotalFailure(400, "You're not supposed to be here. Not like this.")
+        raise AFException(400, "You're not supposed to be here. Not like this.")

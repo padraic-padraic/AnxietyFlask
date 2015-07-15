@@ -7,6 +7,7 @@ from time import mktime
 CONF = MailgunConfig()
 
 def rfc2822(dt):
+    """Return POSIX timestamps for mailgun's events API"""
     return formatdate(mktime(dt.timetuple()))
 
 class Mail():
@@ -22,26 +23,23 @@ class Mail():
         for key, val in kwargs:
             self.parameters[key] = val
 
-    def do_request(self, endpoint, r_type, **kwargs):
+    def do_request(self, endpoint, http_verb, **kwargs):
         if kwargs:
             for key, val in kwargs:
                 self.parameters[key] = val
-        if r_type == 'get':
+        if http_verb == 'get':
             _r = get(self.base_url+self.domain+endpoint, params=self.parameters,
                      auth=('api',self.api_key))
-        elif r_type == 'post':
+        elif http_verb == 'post':
             _r = post(self.base_url+self.domain+endpoint, data=self.parameters,
                       auth=('api',self.api_key))
-        elif r_type == 'delete':
+        elif http_verb == 'delete':
             _r = delete(self.base_url+self.domain+endpoint, auth=('api', self.api_key))
         else:
-            raise Exception
-        if _r.status_code != 200:
+            raise NameError("I don't know about the HTTP verb " + http_verb)
+        if _r.statuscodes != 200:
             _r.raise_for_status()
-        try:
-            return _r.json()
-        except ValueError:
-            return True
+        return _r.json()
 
 class InMail(Mail):
     """Incoming messages, distinguished as fetching/deleting stored messages uses a slightly different base url"""
@@ -55,6 +53,8 @@ class InMail(Mail):
 
     @classmethod
     def get_messages(cls):
+    #Note to self, clean this up to allow user supplied date ranges...
+    #Is @classmethod really the best way to do this?
         """Fetch the last days messages."""
         events = Mail(begin=rfc2822(datetime.now()-timedelta(days=1)), end=rfc2822(datetime.now()),
                        pretty='no', event='stored').do_request('events', 'get')

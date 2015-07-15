@@ -1,7 +1,8 @@
-"""The email generating bot; this component is mostly a transcription of Paul's code, only used a little python to break the 
-sentence fragments out into json files so I could add more / didn't have to transcrive them by hand"""
-from AnxietyFlask.config import WORK_DIR
-from random import choice, randint, sample
+"""The email generating bot; this component is mostly a transcription of Paul's code, only used a little python to break the
+sentence fragments out into json files so I could add more / didn't have to transcribe them by hand"""
+from AnxietyFlask.config import WORK_DIR, DOMAIN
+from AnxietyFlask.emails import ANXIETY_PLAIN, ANXIETY_HTML
+from random import seed, choice, randint, sample
 
 import json
 
@@ -24,7 +25,7 @@ def and_join(_list):
 
 def monster():
     elements = PERSON.keys()
-    _n = randint(2,3)
+    _n = randint(1,2)
     return and_join([choice(PERSON[choice(elements)]) for i in xrange(_n)])
 
 def capitalise(_str):
@@ -34,53 +35,29 @@ def capitalise(_str):
     return _str
 
 def randth(_key):
-    #Horrible thing that makes repeated phrases that bit less likely
-    return choice(sample(FRAGMENTS[_key], randint(1, len(FRAGMENTS[_key]))))
+    return choice(FRAGMENTS[_key])
 
 def quoth_the_bot(reply):
+    youknow = sample(FRAGMENTS['youknow'],2)
     if reply:
-        return capitalise(randth('youknow') + ' ' + randth('datespan')
+        return capitalise(youknow.pop(0) + ' ' + randth('datespan')
                           + ' ' + randth('action') + ', ' + reply + '-- and '
-                          + randth('youknow') + ' ' + randth('indicators')
+                          + youknow.pop(0) + ' ' + randth('indicators')
                           + ' ' + monster()) + "\n"
     return ""
 
 def subject():
-    return capitalise(randth('indicators') + ' ' + monster()).encode('ascii')
+    return capitalise(randth('indicators') + ' ' + monster())
 
-EMAIL_TEMPLATE = """
-
-Dear {0},
-
-{1}
-
-{2}
-
-{3}
-{4}
-
-Sincerely, 
-
-Your Anxiety
-"""
-HTML_TEMPLATE = """
-Dear {0}, <br><br>
-{1} <br>
-{2} <br>
-{3} <br>
-{4} <br><br>
-Sincerely, <br> Your Anxiety <br>
-<a href="anxietylask.ddns.net/deactivate?uuid={uid}">Deactivate</a> or <a href="anxietyflask.ddns.net/delete?uuid={uid}">delete</a>
-your account here.
-"""
-
-def compose(uid, name, anxiety, reply):
+def compose(uid, name, anxiety, reply = None):
+    interrogatories = sample(FRAGMENTS['interrogatories'],3)
+    returns = sample(FRAGMENTS['returns'],2)
     question = capitalise(randth('contemplatives') + ' ' + anxiety)
-    check_in = capitalise(randth('interrogatories') + ' ' + randth('offers')
-                       + " \"" + anxiety + "\"-- " + randth('interrogatories'))
+    check_in = capitalise(interrogatories.pop(0) + ' ' + randth('offers')
+                       + " \"" + anxiety + "\"-- " + interrogatories.pop(0))
     quote = quoth_the_bot(reply)
-    closer = capitalise(randth('returns') + ' ' + randth('interrogatories'))
-    closer += capitalise(randth('returns') + ' ' + randth('call-to-action'))
-    plain = EMAIL_TEMPLATE.format(name, question, check_in, quote, closer, uid=uid)
-    html = HTML_TEMPLATE.format(name, question, check_in, quote, closer, uid=uid)
+    closer = capitalise(returns.pop(0) + ' ' + interrogatories.pop(0))
+    closer += (' ' + capitalise(returns.pop(0) + ' ' + randth('call-to-action')))
+    plain = ANXIETY_PLAIN.format(name, question, check_in, quote, closer, domain=DOMAIN, uid=uid)
+    html = ANXIETY_HTML.format(name, question, check_in, quote, closer, domain = DOMAIN, uid=uid)
     return plain, html
