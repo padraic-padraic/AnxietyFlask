@@ -1,6 +1,5 @@
-from AnxietyFlask import make_app, AFException
-from AnxietyFlask.config import DOMAIN, ADMIN, ADMIN_EMAIL
-from AnxietyFlask.emails import ACTIVATION_TEMPLATE, ACTIVATION_HTML, ADMIN_PLAIN, ADMIN_HTML
+from AnxietyFlask import make_app
+from AnxietyFlask.emails import *
 from AnxietyFlask.mailgun import InMail, OutMail
 from AnxietyFlask.models import db, Account, Reply
 from flask import url_for
@@ -22,6 +21,17 @@ class ContextTask(TaskBase):
 celery.Task = ContextTask
 
 MANUAL_SEND_ENDPOINT = "http://path-to-site.com/api/send?uid="
+
+class SendingException(HTTPError):
+    def __init__(self, _e, _user):
+        self.user = user
+        super(SendingException, self).__init__(response=_e.response, request=_e.request)
+
+    def __str__(self):
+        return FAILURE_PLAIN.format(email=self.user.email, code=self.response.status_code, uid=self.user.uid)
+
+    def html(self):
+        return FAILURE_HTML.format(email=self.user.email, code=self.response.status_code, uid=self.user.uid)
 
 @celery.task(name='tasks.process')
 def process_mail(message):
@@ -47,9 +57,11 @@ def get_mail():
 def notify_sending_error(results):
     failed = [res for res in results if res.status != 'SUCCESS']
     if failed:
-        plain_text = ADMIN_PLAIN.format(ADMIN, failed)
-        html = ADMIN_HTML.format(ADMIN, failed)
-        OutMail(subject='Sending Failed', body=plain_text, html=html, to=ADMIN_EMAIL)
+        failed_plain = [str(x.get()) for x in failed]
+        failed_html = [x.get().html() for x in failed]
+    plain_text = ADMIN_PLAIN.format(app.config['ADMIN'], failed_plain)
+    html = ADMIN_HTML.format(app.config['ADMIN'], failed_html)
+    OutMail(subject='Sending Failed', body=plain_text, html=html, to=app.config['ADMIN_EMAIL'])
 
 @celery.task(name='tasks.send_mail')
 def send_mail():
@@ -62,10 +74,13 @@ def send_mail():
 def anxiety_nudge(user):
     _subject, emails = user.mail
     plain_text, html = emails
-    OutMail(subject=_subject, body=plain_text, html=html, to=user.email).send()
+    try:
+        OutMail(subject=_subject, body=plain_text, html=html, to=user.email).send()
+    except HTTPError as _e:
+        raise SendingException(_e, user)
 
 @celery.task(name='tasks.send_activation')
 def send_activation(account):
-    plain = ACTIVATION_TEMPLATE.format(account.name.split(' ')[0], domain=DOMAIN, uid=account.uid)
-    html = ACTIVATION_HTML.format(account.name.split(' ')[0], domain=DOMAIN, uid=account.uid)
+    plain = ACTIVATION_TEMPLATE.format(account.name.split(' ')[0], domain=app.config['DOMAIN'], uid=account.uid)
+    html = ACTIVATION_HTML.format(account.name.split(' ')[0], domain=app.config['DOMAIN'], uid=account.uid)
     OutMail(to=account.email, text=plain, html=html, subject="Confirm your account").send()

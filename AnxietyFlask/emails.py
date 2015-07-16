@@ -48,6 +48,13 @@ Don't worry, if it gets overwhelming you can always <a href="{domain}/deactivate
 Sincerely, <br> Your Anxiety
 """
 
+FAILURE_PLAIN = """
+Sending to {email} failed with error: {code}. Retry? {link}
+
+"""
+FAILURE_HTML = """
+Sending to {email} failed with error: {code}. <a href="{link}">Retry?</a><br>
+"""
 ADMIN_PLAIN = """
 Dear{0}, 
 
