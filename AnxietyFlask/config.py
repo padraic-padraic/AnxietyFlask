@@ -18,7 +18,7 @@ class Config():
             'schedule': crontab(hour='3, 7, 9, 10, 11, 12, 14, 15, 17, 18, 21, 23', minute=30)
         }
     }
-    ADMIN_MAIL = 'your_mail@isp.tld'
+    ADMIN_EMAIL = 'your_mail@isp.tld'
     ADMIN = 'You!'
     SECRET_KEY = 'A secret...'
     DOMAIN = 'Your.Domain'

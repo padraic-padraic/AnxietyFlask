@@ -47,3 +47,23 @@ To confirm that, click <a href="{domain}/activate?uuid={uid}"> here</a>. <br>
 Don't worry, if it gets overwhelming you can always <a href="{domain}/deactivate>deactivate</a> or <a href="{domain}/delete">delete</a> your account.<br>
 Sincerely, <br> Your Anxiety
 """
+
+ADMIN_PLAIN = """
+Dear{0}, 
+
+The following emails failed to send. You can review each one below:
+
+{emails}
+
+Sincerely, 
+The Anxiety Flask
+"""
+
+ADMIN_HTML = """
+Dear{0},<br> 
+The following emails failed to send. You can review each one below:<br>
+{emails}
+<br>
+Sincerely,<br> 
+The Anxiety Flask
+"""

@@ -1,10 +1,12 @@
 from AnxietyFlask import make_app, AFException
-from AnxietyFlask.config import DOMAIN
-from AnxietyFlask.emails import ACTIVATION_TEMPLATE, ACTIVATION_HTML
+from AnxietyFlask.config import DOMAIN, ADMIN, ADMIN_EMAIL
+from AnxietyFlask.emails import ACTIVATION_TEMPLATE, ACTIVATION_HTML, ADMIN_PLAIN, ADMIN_HTML
 from AnxietyFlask.mailgun import InMail, OutMail
 from AnxietyFlask.models import db, Account, Reply
 from flask import url_for
 from celery import Celery
+from datetime import timedelta
+from datetime.datetime import now
 from requests.exceptions import HTTPError
 from random import random, shuffle
 
@@ -41,22 +43,26 @@ def get_mail():
     for message in mail:
         process.delay(message)
 
+@celery.task(name='tasks.check_errors')
+def notify_sending_error(results):
+    failed = [res for res in results if res.status != 'SUCCESS']
+    if failed:
+        plain_text = ADMIN_PLAIN.format(ADMIN, failed)
+        html = ADMIN_HTML.format(ADMIN, failed)
+        OutMail(subject='Sending Failed', body=plain_text, html=html, to=ADMIN_EMAIL)
+
 @celery.task(name='tasks.send_mail')
 def send_mail():
     actives = Account.query.filter_by(active = True).all()
     shuffle(actives)
-    for user in actives:
-        your_anxiety.delay(countdown=random()*3600)
+    results = [your_anxiety.delay(countdown=random()*3600, retry=True) for user in users]
+    check_errors.delay(results, eta=now()+timedelta(minutes=120))
 
 @celery.task(name='tasks.your_anxiety')
 def anxiety_nudge(user):
     _subject, emails = user.mail
     plain_text, html = emails
-    try:
-        OutMail(subject=_subject, body=plain_text, html=html, to=user.email).send()
-    except HTTPError as _e:
-        pass
-
+    OutMail(subject=_subject, body=plain_text, html=html, to=user.email).send()
 
 @celery.task(name='tasks.send_activation')
 def send_activation(account):
